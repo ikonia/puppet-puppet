@@ -16,58 +16,75 @@ class puppet::agent::facter (
     value   => 'puppet',
   }
 
+#  if $blocklist {
+#    file { 'blocklist facts group':
+#      ensure  => present,
+#      path    => '/etc/puppetlabs/facter/facter.conf',
+#      content => stdlib::to_json_pretty({
+#         my_param   => 'matt',
+#         fact-groups => {
+#           blocked-facts => $blocklist, },
+#      }),}
+#    }
+#}
   if $blocklist {
-    hocon_setting { 'blocklist facts group':
+    file { 'blocklist facts group':
       ensure  => present,
       path    => '/etc/puppetlabs/facter/facter.conf',
-      setting => 'fact-groups.blocked-facts',
-      value   => $blocklist,
-      type    => 'array',
-    }
-    -> hocon_setting { 'blocklist facts':
-      ensure  => present,
-      path    => '/etc/puppetlabs/facter/facter.conf',
-      setting => 'facts.blocklist',
-      value   => ['blocked-facts'],
-      type    => 'array',
-    }
-  } else {
-    hocon_setting { 'blocklist facts group':
-      ensure  => absent,
-      path    => '/etc/puppetlabs/facter/facter.conf',
-      setting => 'fact-groups.blocked-facts',
-    }
-    hocon_setting { 'blocklist facts':
-      ensure  => absent,
-      path    => '/etc/puppetlabs/facter/facter.conf',
-      setting => 'facts.blocklist',
-    }
-  }
-  if $cachelist {
-    hocon_setting { 'cachelist facts group':
-      ensure  => present,
-      path    => '/etc/puppetlabs/facter/facter.conf',
-      setting => 'fact-groups.cached-facts',
-      value   => $cachelist,
-      type    => 'array',
-    }
-    -> hocon_setting { 'cachelist facts':
-      ensure  => present,
-      path    => '/etc/puppetlabs/facter/facter.conf',
-      setting => 'facts.ttls',
-      value   => [{ 'cached-facts' => $cache_ttl }],
-      type    => 'array',
-    }
-  } else {
-    hocon_setting { 'cachelist facts group':
-      ensure  => absent,
-      path    => '/etc/puppetlabs/facter/facter.conf',
-      setting => 'fact-groups.cached-facts',
-    }
-    hocon_setting { 'cachelist facts':
-      ensure  => absent,
-      path    => '/etc/puppetlabs/facter/facter.conf',
-      setting => 'facts.ttls',
+      content => stdlib::to_json_pretty(
+        {
+          fact-groups => {
+            blocked-facts => $blocklist,
+          },
+        },
+      ),
     }
   }
 }
+#    -> hocon_setting { 'blocklist facts':
+#      ensure  => present,
+#      path    => '/etc/puppetlabs/facter/facter.conf',
+#      setting => 'facts.blocklist',
+#      value   => ['blocked-facts'],
+#      type    => 'array',
+#    }
+# } else {
+#    hocon_setting { 'blocklist facts group':
+#      ensure  => absent,
+#      path    => '/etc/puppetlabs/facter/facter.conf',
+#      setting => 'fact-groups.blocked-facts',
+#    }
+#    hocon_setting { 'blocklist facts':
+#      ensure  => absent,
+#      path    => '/etc/puppetlabs/facter/facter.conf',
+#      setting => 'facts.blocklist',
+#    }
+#  }
+#  if $cachelist {
+#    hocon_setting { 'cachelist facts group':
+#      ensure  => present,
+#      path    => '/etc/puppetlabs/facter/facter.conf',
+#      setting => 'fact-groups.cached-facts',
+#      value   => $cachelist,
+#      type    => 'array',
+#    }
+#    -> hocon_setting { 'cachelist facts':
+#      ensure  => present,
+#      path    => '/etc/puppetlabs/facter/facter.conf',
+#      setting => 'facts.ttls',
+#      value   => [{ 'cached-facts' => $cache_ttl }],
+#      type    => 'array',
+#    }
+#  } else {
+#    hocon_setting { 'cachelist facts group':
+#      ensure  => absent,
+#      path    => '/etc/puppetlabs/facter/facter.conf',
+#      setting => 'fact-groups.cached-facts',
+#    }
+#    hocon_setting { 'cachelist facts':
+#      ensure  => absent,
+#      path    => '/etc/puppetlabs/facter/facter.conf',
+#      setting => 'facts.ttls',
+#    }
+#  }
+#}
